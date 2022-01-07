@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
         guessedWordsAndResults[guess] = guessResult
         words = buildNewWords(words, guess, guessResult)
     }
-    println(words.first())
+    println("Hooray! The answer is ${words.first().uppercase()}")
 }
 
 fun buildNewWords(currentWords: List<String>, guess: String, guessResult: String): List<String> {
@@ -47,6 +47,6 @@ fun wordWithHighestScore(words: List<String>, scoring: (String) -> Int): String 
 
 fun mostFreqUsage(input: String, usageCounts: Map<Char, Int>, guessedWordsAndResults: Map<String, String>) =
     input.toCharArray().mapIndexed { i, c ->
-        val gotYellowInThisPositionAlready = guessedWordsAndResults.any { w -> w.component1()[i] == c && w.component2()[i] == PARTIAL }
-        if (input.indexOf(c) == i && !gotYellowInThisPositionAlready) usageCounts[c]!! else 0
+        val gotYellowOrGreenInThisPositionAlready = guessedWordsAndResults.any { w -> w.component1()[i] == c && w.component2()[i] != MISS }
+        if (input.indexOf(c) == i && !gotYellowOrGreenInThisPositionAlready) usageCounts[c]!! else 0
     }.sum()
