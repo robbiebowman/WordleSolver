@@ -21,17 +21,34 @@ fun main(args: Array<String>) {
     println("Hooray! The answer is ${words.first().uppercase()}")
 }
 
-fun buildNewWords(currentWords: List<String>, guess: String, guessResult: String): List<String> {
+fun buildNewWords(currentWords: List<String>, guess: String, result: String): List<String> {
     return currentWords.filter { w ->
-        guessResult.mapIndexed { i, r ->
+        result.mapIndexed { i, r ->
+            val c = guess[i]
             when (r) {
-                HIT -> guess[i] == w[i]
-                PARTIAL -> w.contains(guess[i])
-                MISS -> !w.contains(guess[i])
+                HIT -> c == w[i]
+                PARTIAL -> w.contains(c)
+                MISS -> !w.contains(c) ||
+                        if (isBlackBecauseCharWasGuessedTooManyTimes(i, c, guess, result))
+                            hasFewerOfCharThanGuess(c, w, guess)
+                        else
+                            false
                 else -> throw Exception("You messed up the results, dummy")
             }
         }.all { it }
     }
+}
+
+fun hasFewerOfCharThanGuess(char: Char, word: String, guess: String): Boolean {
+    return word.count { it == char } < guess.count { it == char }
+}
+
+fun isBlackBecauseCharWasGuessedTooManyTimes(index: Int, char: Char, guess: String, result: String): Boolean {
+    val numYellowsForCharBeforeCurrent =
+        guess.take(index).mapIndexed { i, c -> result[i] == PARTIAL && c == char }.count { it }
+    val numGreensForChar = guess.mapIndexed { i, c -> result[i] == HIT && c == char }.count { it }
+    val numCharInTotal = guess.count { it == char }
+    return numYellowsForCharBeforeCurrent + numGreensForChar < numCharInTotal
 }
 
 fun getWords(filePath: String): List<String> = File(filePath).readText().split('\n').dropLast(1).map { it.trim() }
@@ -47,6 +64,7 @@ fun wordWithHighestScore(words: List<String>, scoring: (String) -> Int): String 
 
 fun mostFreqUsage(input: String, usageCounts: Map<Char, Int>, guessedWordsAndResults: Map<String, String>) =
     input.toCharArray().mapIndexed { i, c ->
-        val gotYellowOrGreenInThisPositionAlready = guessedWordsAndResults.any { w -> w.component1()[i] == c && w.component2()[i] != MISS }
+        val gotYellowOrGreenInThisPositionAlready =
+            guessedWordsAndResults.any { w -> w.component1()[i] == c && w.component2()[i] != MISS }
         if (input.indexOf(c) == i && !gotYellowOrGreenInThisPositionAlready) usageCounts[c]!! else 0
     }.sum()
