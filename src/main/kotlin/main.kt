@@ -13,7 +13,10 @@ fun main(args: Array<String>) {
         val guessedWordsAndResults = mutableListOf<Pair<String, String>>()
         while (remainingPossibilities.count() > 1) {
             val charUsages = countCharUsages(remainingPossibilities, guessedWordsAndResults)
-            val guess = wordWithHighestScore(corpus) { i -> mostFreqUsage(i, charUsages, guessedWordsAndResults) }
+            val guess = if (remainingPossibilities.size == 2)
+                remainingPossibilities.first()
+            else
+                wordWithHighestScore(corpus) { i -> mostFreqUsage(i, charUsages, guessedWordsAndResults) }
             println("Try ${guess.uppercase()}")
             println("Input results (g for green, y for yellows, b for blacks. Example: bbbyg):")
             guessResult = readLine()!!
