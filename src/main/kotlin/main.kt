@@ -7,8 +7,8 @@ const val MISS = 'b'
 
 fun main(args: Array<String>) {
     while (true) {
-        val corpus = getWords("five-letter-words.txt")
-        var remainingPossibilities = corpus
+        val corpus = getWords("corpus.txt")
+        var remainingPossibilities = getWords("answers.txt")
         var guessResult: String
         val guessedWordsAndResults = mutableListOf<Pair<String, String>>()
         while (remainingPossibilities.count() > 1) {
@@ -59,7 +59,7 @@ fun isBlackBecauseCharWasGuessedTooManyTimes(index: Int, char: Char, guess: Stri
     return numYellowsForCharBeforeCurrent + numGreensForChar < numCharInTotal
 }
 
-fun getWords(filePath: String): List<String> = File(filePath).readText().split('\n').dropLast(1).map { it.trim() }
+fun getWords(filePath: String): List<String> = File(filePath).readText().split('\n').map { it.trim() }
 
 fun countCharUsages(words: List<String>, guessedWordsAndResults: List<Pair<String, String>>): Map<Char, Int> {
     val allChars = words.joinToString("")
