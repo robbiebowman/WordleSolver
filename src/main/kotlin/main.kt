@@ -9,14 +9,14 @@ fun main(args: Array<String>) {
     val corpus = getWords("five-letter-words.txt")
     var remainingPossibilities = corpus
     var guessResult: String
-    val guessedWordsAndResults = HashMap<String, String>()
+    val guessedWordsAndResults = mutableListOf<Pair<String, String>>()
     while (remainingPossibilities.count() > 1) {
-        val charUsages = countCharUsages(remainingPossibilities)
+        val charUsages = countCharUsages(remainingPossibilities, guessedWordsAndResults)
         val guess = wordWithHighestScore(corpus) { i -> mostFreqUsage(i, charUsages, guessedWordsAndResults) }
         println("Try ${guess.uppercase()}")
         println("Input results (g for green, y for yellows, b for blacks. Example: bbbyg):")
         guessResult = readLine()!!
-        guessedWordsAndResults[guess] = guessResult
+        guessedWordsAndResults.add(Pair(guess, guessResult))
         remainingPossibilities = buildNewWords(remainingPossibilities, guess, guessResult)
         println("${remainingPossibilities.size} possibilities remain. ")
         if (remainingPossibilities.size < 20) println("Those are: $remainingPossibilities")
@@ -56,16 +56,39 @@ fun isBlackBecauseCharWasGuessedTooManyTimes(index: Int, char: Char, guess: Stri
 
 fun getWords(filePath: String): List<String> = File(filePath).readText().split('\n').dropLast(1).map { it.trim() }
 
-fun countCharUsages(words: List<String>): Map<Char, Int> {
+fun countCharUsages(words: List<String>, guessedWordsAndResults: List<Pair<String, String>>): Map<Char, Int> {
     val allChars = words.joinToString("")
-    return ('a'..'z').map { a -> a to allChars.count { c -> c == a } }.toMap()
+    return ('a'..'z').map { a ->
+        a to if (
+            charHasBeenGuessedAlready(a, guessedWordsAndResults)
+            && !hasUnplacedOccurrences(a, guessedWordsAndResults)
+        )
+            0
+        else
+            allChars.count { c -> c == a }
+    }.toMap()
+}
+
+fun charHasBeenGuessedAlready(char: Char, guessedWordsAndResults: List<Pair<String, String>>): Boolean {
+    return guessedWordsAndResults.any { e -> e.component1().contains(char) }
+}
+
+fun hasUnplacedOccurrences(char: Char, guessedWordsAndResults: List<Pair<String, String>>): Boolean {
+    val maxInGuess = guessedWordsAndResults.map { it.first.count { c -> c == char } }.maxOrNull() ?: 0
+    return guessedWordsAndResults
+        .filter { it.first.count { c -> c == char } == maxInGuess }
+        .none {
+            it.first.mapIndexed { i, c ->
+                if (c == char) it.second[i] == HIT else true
+            }.all { b -> b }
+        }
 }
 
 fun wordWithHighestScore(words: List<String>, scoring: (String) -> Int): String {
     return words.maxByOrNull { scoring(it) }!!
 }
 
-fun mostFreqUsage(input: String, usageCounts: Map<Char, Int>, guessedWordsAndResults: Map<String, String>) =
+fun mostFreqUsage(input: String, usageCounts: Map<Char, Int>, guessedWordsAndResults: List<Pair<String, String>>) =
     input.toCharArray().mapIndexed { i, c ->
         val gotYellowOrGreenInThisPositionAlready =
             guessedWordsAndResults.any { w -> w.component1()[i] == c && w.component2()[i] != MISS }
