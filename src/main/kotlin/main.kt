@@ -6,19 +6,22 @@ const val PARTIAL = 'y'
 const val MISS = 'b'
 
 fun main(args: Array<String>) {
-    var words = getWords("five-letter-words.txt")
+    val corpus = getWords("five-letter-words.txt")
+    var remainingPossibilities = corpus
     var guessResult: String
     val guessedWordsAndResults = HashMap<String, String>()
-    while (words.count() > 1) {
-        val charUsages = countCharUsages(words)
-        val guess = wordWithHighestScore(words) { i -> mostFreqUsage(i, charUsages, guessedWordsAndResults) }
+    while (remainingPossibilities.count() > 1) {
+        val charUsages = countCharUsages(remainingPossibilities)
+        val guess = wordWithHighestScore(corpus) { i -> mostFreqUsage(i, charUsages, guessedWordsAndResults) }
         println("Try ${guess.uppercase()}")
         println("Input results (g for green, y for yellows, b for blacks. Example: bbbyg):")
         guessResult = readLine()!!
         guessedWordsAndResults[guess] = guessResult
-        words = buildNewWords(words, guess, guessResult)
+        remainingPossibilities = buildNewWords(remainingPossibilities, guess, guessResult)
+        println("${remainingPossibilities.size} possibilities remain. ")
+        if (remainingPossibilities.size < 20) println("Those are: $remainingPossibilities")
     }
-    println("Hooray! The answer is ${words.first().uppercase()}")
+    println("Hooray! The answer is ${remainingPossibilities.first().uppercase()}")
 }
 
 fun buildNewWords(currentWords: List<String>, guess: String, result: String): List<String> {
@@ -27,7 +30,7 @@ fun buildNewWords(currentWords: List<String>, guess: String, result: String): Li
             val c = guess[i]
             when (r) {
                 HIT -> c == w[i]
-                PARTIAL -> w.contains(c)
+                PARTIAL -> w.contains(c) && c != w[i]
                 MISS -> !w.contains(c) ||
                         if (isBlackBecauseCharWasGuessedTooManyTimes(i, c, guess, result))
                             hasFewerOfCharThanGuess(c, w, guess)

@@ -1688,6 +1688,7 @@ irons
 barks
 whoop
 choke
+choky
 diets
 whips
 tally
@@ -1867,6 +1868,7 @@ creak
 vanes
 smoky
 spurt
+choky
 combs
 easel
 laces
@@ -2682,6 +2684,7 @@ shins
 totes
 scoot
 dears
+ditsy
 crock
 mutes
 trims
