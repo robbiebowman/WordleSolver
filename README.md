@@ -6,7 +6,7 @@ Solves the wonderful puzzles of Wordle https://www.powerlanguage.co.uk/wordle/
 ## Setup
 ```groovy
 dependencies {
-    implementation 'com.github.robbiebowman:WordleSolver:v0.8'
+    implementation 'com.github.robbiebowman:WordleSolver:v1.2'
 }
 ```
 ## Sample usage
