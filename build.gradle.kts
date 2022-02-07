@@ -2,11 +2,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.5.20"
+    `maven-publish`
     application
 }
 
-group = "com.robbiebowman"
-version = "1.0-SNAPSHOT"
+group = "com.github.robbiebowman"
+version = "v0.1"
 
 repositories {
     mavenCentral()
