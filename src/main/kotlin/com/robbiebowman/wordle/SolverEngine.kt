@@ -7,9 +7,9 @@ const val HIT = 'g'
 const val PARTIAL = 'y'
 const val MISS = 'b'
 
-data class Suggestion(val word: String, val remainingCount: Int, val possibleAnswers: List<String>?)
+data class Suggestion(val word: String, val possibleAnswers: List<String>)
 
-fun getSuggestion(guesses: List<String>, answers: List<String>): Suggestion {
+fun getSuggestion(guesses: List<String>, answers: List<String>, hardMode: Boolean = false): Suggestion {
     val corpus = getWords("five-letter-words.txt")
     var remainingPossibilities = corpus
     val guessedWordsAndResults = guesses.zip(answers).toMutableList()
@@ -22,9 +22,9 @@ fun getSuggestion(guesses: List<String>, answers: List<String>): Suggestion {
     val guess = if (remainingCount <= 2)
         remainingPossibilities.first()
     else
-        wordWithHighestScore(corpus) { i -> mostFreqUsage(i, charUsages, guessedWordsAndResults) }
+        wordWithHighestScore(if (hardMode) remainingPossibilities else corpus) { i -> mostFreqUsage(i, charUsages, guessedWordsAndResults) }
 
-    return Suggestion(guess, remainingCount, if (remainingCount <= 20) remainingPossibilities else null)
+    return Suggestion(guess, remainingPossibilities)
 }
 
 fun buildNewWords(currentWords: List<String>, guess: String, result: String): List<String> {
