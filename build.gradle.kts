@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.github.robbiebowman"
-version = "v0.5"
+version = "v0.6"
 
 repositories {
     mavenCentral()
@@ -23,4 +23,12 @@ tasks.test {
 
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("WordleSolver") {
+            from(components["java"])
+        }
+    }
 }
