@@ -1,3 +1,4 @@
+import com.robbiebowman.wordle.getSuggestion
 import org.junit.Test
 import kotlin.test.assertNotNull
 
