@@ -2,11 +2,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.5.20"
-    application
+    `maven-publish`
+    `java-library`
 }
 
-group = "com.robbiebowman"
-version = "1.0-SNAPSHOT"
+group = "com.github.robbiebowman"
+version = "v0.8"
 
 repositories {
     mavenCentral()
@@ -24,6 +25,10 @@ tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-application {
-    mainClassName = "MainKt"
+publishing {
+    publications {
+        create<MavenPublication>("WordleSolver") {
+            from(components["java"])
+        }
+    }
 }
