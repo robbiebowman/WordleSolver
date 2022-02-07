@@ -1,5 +1,4 @@
-import java.io.File
-import java.lang.Exception
+import com.robbiebowman.wordle.*
 
 fun main(args: Array<String>) {
     while (true) {

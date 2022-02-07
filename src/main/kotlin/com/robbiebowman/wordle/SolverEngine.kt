@@ -1,3 +1,5 @@
+package com.robbiebowman.wordle
+
 import java.io.File
 import java.lang.Exception
 
